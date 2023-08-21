@@ -14,20 +14,20 @@
 
             <div class="field">
                 <div class="control">
-                    <a href="/setting" class="button">設定</a>
+                    <a href="/" class="button">戻る</a>
                 </div>
             </div>
 
-            <form action="/ingen" method="post" @submit="isLoading = true;">
+            <form action="/setting" method="post" @submit="isLoading = true;">
                 <div class="field">
                     <div class="control">
-                        <textarea class="textarea" name="input" required></textarea>
+                        <textarea class="textarea" name="rule" required>{{ ctx.rule }}</textarea>
                     </div>
                 </div>
 
                 <div class="field">
                     <div class="control">
-                        <button class="button is-primary" :class="{'is-loading': isLoading}">submit</button>
+                        <button class="button is-primary" :class="{'is-loading': isLoading}">保存</button>
                     </div>
                 </div>
             </form>

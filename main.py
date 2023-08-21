@@ -1,7 +1,16 @@
-from bottle import default_app, get, run, HTTPResponse, request, TEMPLATE_PATH, jinja2_template as template, static_file, route
+from bottle import default_app, get, post, run, HTTPResponse, request, TEMPLATE_PATH, jinja2_template as template, static_file, route, redirect
+from dotenv import load_dotenv
+import os
+import openai
+import backtrace
 
 app = default_app()
 TEMPLATE_PATH.append("./template")
+
+backtrace.hook(
+    reverse=True,
+    strip_path=True
+)
 
 
 class Context:
@@ -36,11 +45,60 @@ def response_for_options(**kwargs):
     return re
 
 
-@get("/")
+@app.route("/")
 def index():
     context = Context()
     context.add("msg", "hello world")
     return template("index.html", ctx=context.to_template())
+
+
+@get("/setting")
+def setting():
+    context = Context()
+    with open("./rule.txt", mode="r") as rule_file:
+        context.add("rule", "".join(rule_file.readlines()))
+    return template("setting.html", ctx=context.to_template())
+
+
+@post("/setting")
+def setting():
+    rule = request.forms.rule
+    with open("./rule.txt", mode="w") as rule_file:
+        rule_file.writelines(rule.split("\n"))
+    redirect('/')
+
+
+@post("/ingen")
+def ingen():
+    context = Context()
+
+    org = request.forms.input
+    with open("./rule.txt", mode="r") as rule_file:
+        rule = "".join(rule_file.readlines())
+        prompt = f"""
+下記手順に従って、入力文を変換してください。
+
+手順
+{rule}
+
+入力文：
+{org}
+
+変換後：
+        """
+
+    load_dotenv()
+    openai.api_key = os.environ.get('OPENAI_API_KEY')
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": prompt},
+        ],
+    )
+    context.add("result", response.choices[0]["message"]["content"].strip())
+
+    return template("result.html", ctx=context.to_template())
 
 
 if __name__ == "__main__":

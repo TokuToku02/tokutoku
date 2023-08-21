@@ -11,23 +11,16 @@
 <div id="app">
     <div class="container">
         <div class="section">
-
-            <div class="field">
-                <div class="control">
-                    <a href="/setting" class="button">設定</a>
-                </div>
-            </div>
-
-            <form action="/ingen" method="post" @submit="isLoading = true;">
+            <form action="/ingen" method="post">
                 <div class="field">
                     <div class="control">
-                        <textarea class="textarea" name="input" required></textarea>
+                        <textarea readonly class="textarea">{{ ctx.result }}</textarea>
                     </div>
                 </div>
 
                 <div class="field">
                     <div class="control">
-                        <button class="button is-primary" :class="{'is-loading': isLoading}">submit</button>
+                        <a href="/" class="button">リトライ</a>
                     </div>
                 </div>
             </form>
@@ -41,7 +34,6 @@
         el: '#app',
         delimiters: ["[[", "]]"],
         data: {
-            isLoading: false,
         },
     });
 </script>
