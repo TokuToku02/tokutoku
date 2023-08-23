@@ -20,10 +20,29 @@
 
             <form action="/setting" method="post" @submit="isLoading = true;">
                 <div class="field">
+                    <label class="label">ベーシック認証</label>
+                    <div class="control">
+                        <input type="text" pattern="^[^:]*$" class="input" name="basic_id" placeholder="ID" value="{{ ctx.basic_id }}">
+                    </div>
+                    <div class="control">
+                        <input type="text" pattern="^[^:]*$" class="input" name="basic_password" placeholder="パスワード" value="{{ ctx.basic_password }}">
+                    </div>
+                    <p class="help">
+                        APIキーを第三者に使用されてしまう事態を防ぐため、ベーシック認証での保護を推奨します。<br>
+                        どちらも入力するとベーシック認証が有効になります。いずれか一方でも未入力だとベーシック認証は解除されます。<br>
+                        「:(半角コロン)」は使えません。
+                    </p>
+                </div>
+
+                <div class="field">
                     <label class="label">変換手順</label>
                     <div class="control">
                         <textarea class="textarea" name="rule" required>{{ ctx.rule }}</textarea>
                     </div>
+                    <p class="help">
+                        変換の精度が上がるよう、適宜調整してください。<br>
+                        変換手順が長すぎると、変換できる原文の長さが短くなります。
+                    </p>
                 </div>
 
                 <div class="field">
