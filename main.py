@@ -70,12 +70,14 @@ def setting():
 
 @post("/ingen")
 def ingen():
-    context = Context()
+    try:
+        context = Context()
 
-    org = request.forms.input
-    with open("./rule.txt", mode="r") as rule_file:
-        rule = "".join(rule_file.readlines())
-        prompt = f"""
+        org = request.forms.input
+        model = request.forms.model
+        with open("./rule.txt", mode="r") as rule_file:
+            rule = "".join(rule_file.readlines())
+            prompt = f"""
 下記手順に従って、入力文を変換してください。
 
 手順
@@ -87,19 +89,20 @@ def ingen():
 変換後：
         """
 
-    load_dotenv()
-    openai.api_key = os.environ.get('OPENAI_API_KEY')
+        load_dotenv()
+        openai.api_key = os.environ.get('OPENAI_API_KEY')
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "user", "content": prompt},
-        ],
-    )
-    context.add("result", response.choices[0]["message"]["content"].strip())
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {"role": "user", "content": prompt},
+            ],
+        )
+        context.add("result", response.choices[0]["message"]["content"].strip())
 
-    return template("result.html", ctx=context.to_template())
-
+        return template("result.html", ctx=context.to_template())
+    except Exception as e:
+        return e.error.message
 
 if __name__ == "__main__":
     run(host="0.0.0.0", port=8000)
